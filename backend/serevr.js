@@ -1,41 +1,34 @@
-//require dotenv
+// server.js
 require('dotenv').config()
-
-//require express
 const express = require('express')
-
-//require mongoose
 const mongoose = require('mongoose')
 
-//call express function
-const app=express()
+// Require routes
+const workoutRoutes = require('./routes/workoutes')
+const userRoutes = require('./routes/user')
 
-//express json middleware
+// Express app
+const app = express()
+
+// Middleware
 app.use(express.json())
 
-// calling for the routing page
-const workRoutes = require('./routes/workoutes')
-
-//middleware
-app.use((req,res,next)=>
-{
-    console.log(req.path,req.method)
-    next()
+app.use((req, res, next) => {
+  console.log(req.path, req.method)
+  next()
 })
 
-//conncet to db
+// Routes
+app.use('/api/workoutes', workoutRoutes)
+app.use('/api/user', userRoutes)
+
+// Connect to DB
 mongoose.connect(process.env.MONGO_URI)
-.then(()=>
-    {
-        app.listen(process.env.PORT,()=>
-        {
-            console.log('connecting to db & Listening to port',process.env.PORT)
-        })
+  .then(() => {
+    app.listen(process.env.PORT, () => {
+      console.log('connecting to db & Listening to port', process.env.PORT)
     })
-.catch((err)=>
-{
-    console.log('error occur')
-})
-//making get request
-app.use('/api/workoutes',workRoutes)
-
+  })
+  .catch((err) => {
+    console.log('error occur', err)
+  })
